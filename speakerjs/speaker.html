@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic speaker modeling program</title>
+    <style>
+        .container {
+            max-width: 900px; /* Sets the maximum width of the container */
+            width: 100%;      /* Ensures it is responsive and can be smaller than 900px */
+            margin: 0 auto;   /* Centers the container on the page */
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+    </style>
+	<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+  	<!--script language="javascript" type="text/javascript" src="flot/jquery.canvaswrapper.js"></script-->
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.colorhelpers.js"></script-->
+	<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.flot.saturated.js"></script-->
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.flot.browser.js"></script-->
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.flot.drawSeries.js"></script-->
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.flot.uiConstants.js"></script-->
+	<!--script language="javascript" type="text/javascript" src="flot/jquery.flot.logaxis.js"></script-->
+	<script language="javascript" type="text/javascript" src="generated_code.js"></script>
+	
+</head>
+<body>
+  <div class="container">
+    <h1>Basic Speaker Modeling Program</h1>
+	Revision date: March 24, 2026<br>
+	<br>
+	This is a simple modeling program for basic sealed and ported speakers. It uses the formulas
+	that I derived in my speaker theory notebooks.<br>
+	<br>
+	A quick note about the P<sub>e</sub> parameter. <i>The program doesn't use it</i>. 
+	Instead, the program uses the Amplifier Power parameter for the excursion and port air speed graphs. 
+	This lets you figure out how your speaker will perform for your amplifier.
+	<h2>Site Map</h2>
+	<UL>
+		<LI><a href="misc.html#dlibrary">Driver Library</a>
+		<LI><a href="misc.html#faq">FAQ and troubleshooting</a>
+		<LI><a href="#disclaimer">Copyright and warranty disclaimer</a>
+		<LI><a href="misc.html#history">Revision history</a>
+	</UL>
+    <form name="example">
+		<table>
+			<script>
+				// Read a page's GET URL variables and return them as an associative array.
+				function getUrlVars()
+				{
+					var vars = [], hash;
+					var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+					for(var i = 0; i < hashes.length; i++)
+					{
+						hash = hashes[i].split('=');
+						vars.push(hash[0]);
+						vars[hash[0]] = hash[1];
+					}
+					return vars;
+				}
+				
+				// Functions for creating form with multiple data entry boxes
+				
+				// Get a parameter from URL
+				
+				function getparm(s, defaultvalue) {
+					t = decodeURI(location.search)
+					if (t.length == 0) return defaultvalue // no parameters
+					u = t.split(s + '=')
+					if (u.length == 1) return defaultvalue
+					return u[1].split('&')[0]
+					//return location.search.split(se)[1] ? location.search.split(se)[1] : defaultvalue;
+				}
+				
+				// Header line
+				
+				function formheader(textname) {
+					document.write('<tr><td colspan="2"><h2>' + textname.toString() + '</h2></td></tr>')
+				}
+				
+				// Data entry boxes
+				
+				function formparam(textname, javaname, initvalue, units) {
+					document.write('<tr><td>' + textname.toString() + '</td><td><input name="' + 
+						javaname.toString() + '" value="' + 
+						initvalue.toString() + '"></td><td>' +
+						units.toString() + '</td></tr>')
+				}
+				
+				function formparama(textname, javaname, initvalue, units) {
+					formparam(textname, javaname, getparm(javaname, initvalue), units)
+				}
+				
+				// Create the form
+				
+				formheader('Driver Parameters')
+				formparama('Driver name', 'Dname', 'Eminence 2512-ii', '')
+				formparama('F<sub>s</sub>', 'Fs', '53.1', 'Hz')
+				formparama('R<sub>e</sub>', 'R_e', '5.28', 'Ohms')
+				formparama('Q<sub>es</sub>', 'Q_es', '0.64', '')
+				formparama('Q<sub>ms</sub>', 'Q_ms', '2.94', '')
+				formparama('V<sub>as</sub>', 'Vas', '67.44', 'Liters')
+				formparama('S<sub>d</sub>', 'Sd_cm2', '519.5', 'cm<sup>2</sup>')
+				formparama('X<sub>max</sub>', 'Xmax', '4.9', 'mm')
+				formparama('L<sub>e</sub>', 'Le', '0.31', 'mH')
+				formparama('Z<sub>nom</sub>', 'Znom', '8', 'Ohms')
+				formparama('P<sub>e</sub>', 'Pe', '250', 'Watts')
+				formheader('Box Parameters')
+				formparama('Box design name', 'Bname', '32 liter 40 Hz box', '')
+				formparama('Volume', 'V_liters', '32', 'Liters')
+				formparama('Number of drivers', 'Ndrivers', '1', '')
+				formparama('Port tuning', 'Fport', '40', 'Hz, set to 0 for sealed box')
+				formparama('Port width', 'Aport', '21.5', 'cm')
+				formparama('Port height', 'Bport', '3.5', 'cm')
+				formparama('Number of ports', 'nPorts', '1', '')
+				formparama('Port end correction', 'endCorrect', '0.732', '')
+				formparama('Amplifier power', 'PinExc', '100', 'Watts')
+				formheader('Simulation control')
+				formparama('Starting frequency', 'fmin', 10, 'Hz')
+				formparama('Ending frequency', 'fmax', 1000, 'Hz')
+			</script>
+		</table>
+		<p class="stackControls">
+			<input type="button" value="Re-generate Graphs">
+		</p>
+	</form>
+    <h2>
+		<div id="exc_caption">
+			Cone excursion in mm
+		</div>
+	</h2>
+    <div id="excursion" style="width:600px;height:300px;"></div>
+	
+	<h2>
+		<div id="sens_caption">
+			Sensitivity in dB SPL @ 1m
+		</div>
+	</h2>
+    <div id="sensitivity" style="width:600px;height:300px;"></div>
+	
+	<h2>
+		<div id="speed_caption">
+			Port air speed in Mach
+		</div>
+	</h2>
+    <div id="mach" style="width:600px;height:300px;"></div>
+	
+    <h2>Reported Data</h2>
+	<form name="after">
+		<textarea cols="80" rows="20" name="output">Reported data</textarea><br><br>
+		<h3>How do I save or share my design?</h3>
+		It's right here. Your entire design is encoded in this URL. It will reproduce your design if you 
+		enter it into your browser. You can send this URL
+		to a friend or save it in a file as way to "save" your design. <i>This works without
+			sharing any information with me. My web page does not gather or store your information.
+			I don't want it.
+		</i><br><br>
+		<textarea cols="80" rows="10" name="url">URL</textarea><br><br>
+		Raw data, use for your enjoyment.<br><br>
+		<textarea cols="80" rows="10" name="rawdata">raw data</textarea><br><br>
+	</form>
+
+<script type="text/javascript">
+	
+	// general purpose print to output form
+	
+	function dprint(s, v)
+	{
+		ts = document.forms['after'].output.value;
+		ts += s + v + '\n';
+		document.forms['after'].output.value = ts;
+		return v
+	}
+	
+	// get value from data entry form with echo to output form for debugging
+	
+	function dprinty(javaname) {
+		v = document.forms['example'][javaname].value
+		ts = document.forms['after'].url.value
+		ts += javaname + '=' + encodeURI(v) + '&'
+		document.forms['after'].url.value = ts
+		return dprint(javaname + " = ", parseFloat(v))
+	}
+	
+	function dprints(javaname) {
+		v = document.forms['example'][javaname].value
+		ts = document.forms['after'].url.value
+		ts += javaname + '=' + encodeURI(v) + '&'
+		document.forms['after'].url.value = ts
+		return dprint(javaname + " = ", v)
+	}
+
+	// System parameters, OK to change, but these are typical
+
+	PinSens = dprint("Power input for sensitivity graph = ", 1.0);
+	Dist = dprint("Distance for SPL graph = ", 1.0);
+
+	// Physical constants in SI units, change these if you live on a different planet
+
+	Patm = dprint("Atmospheric pressure = ", 101325);
+	b = dprint("Adiabatic constant = ", 1.4);
+	bpatm = dprint("bpatm = ", b*Patm);
+	rho = dprint("Density of air = ", 1.18);
+	// c = dprint("Speed of sound = ", 345);
+	c = dprint("Speed of sound = ", Math.sqrt(bpatm/rho));
+	splref = dprint("SPL reference = ", 2e-5);
+
+	// Get stuff
+	
+	function getstuff()
+	{
+		document.forms['after'].output.value = '';
+		document.forms['after'].url.value = window.location.href.split('?')[0] + '?';
+		
+		dprint('Input parameters in user units', '')
+		dprints('Dname')
+		Fs = dprinty('Fs')
+		R_e = dprinty('R_e')
+		Q_es = dprinty('Q_es')
+		Q_ms = dprinty('Q_ms')
+		Vas_liters = dprinty('Vas')
+		Sd_cm2 = dprinty('Sd_cm2')
+		Xmax_mm = dprinty('Xmax')
+		Le_mH = dprinty('Le')
+		Znom = dprinty('Znom')
+		Pe = dprinty('Pe')
+		dprints('Bname')
+		V_liters = dprinty('V_liters')
+		Ndrivers = dprinty('Ndrivers')
+		Fport = dprinty('Fport')
+		Aport_cm = dprinty('Aport')
+		Bport_cm = dprinty('Bport')
+		nPorts = dprinty('nPorts')
+		endCorrect = dprinty('endCorrect')
+		PinExc = dprinty('PinExc')
+		
+		dprint('Parameters in SI units', '')
+
+		V_as = dprint("V_as = ", Vas_liters*0.001)
+		S_d = dprint("S_d = ", Sd_cm2*0.0001)
+		Xmax = dprint("Xmax = ", Xmax_mm*0.001)
+		L_e = dprint("L_e = ", Le_mH*0.001)
+		V_box = dprint("V_box = ", V_liters*0.001)
+		Aport = dprint("Aport = ", Aport_cm*0.01)
+		Bport = dprint("Bport = ", Bport_cm*0.01)
+		S_port = dprint("S_port = ", Aport*Bport*nPorts)
+		
+		if (Aport < Bport) Rport = dprint("Rport = ", Aport/2)
+		else Rport = dprint("Rport = ", Bport/2)
+
+		dprint ('Computed electromechanical parameters in SI units', '')
+
+		w_s = dprint("w_s, Fs in angular units = ", Fs*2*Math.PI)
+		w_port = dprint("w_port, Fport in angular units = ", Fport*2*Math.PI)
+		wp2 = dprint("w_port^2 = ", Math.pow(w_port,2))
+		Km = dprint("Km, spring constant of driver in N/m = ", bpatm*Math.pow(S_d,2)/V_as)
+		Kbox = dprint("Kbox, spring constant of cone pushing box air in N/m = ", Math.pow(S_d,2)*bpatm*Ndrivers/V_box)
+		VinSens = dprint("VinSens, input voltage amplitude for sensitivity graph in V = ", Math.sqrt(PinSens/Ndrivers*Znom))
+		VinExc = dprint("VinExc, input voltage amplitude for excursion graph in V = ", Math.sqrt(2*PinExc/Ndrivers*Znom))
+		//Bl2 = dprint("Bl^2, square of Bl = ", Math.pow(Bl,2))
+		lport = dprint("lport, length of port in m = ", S_port*bpatm/rho/V_box/wp2 - Rport*2*endCorrect)
+		Lport_cm = dprint("lport, length of port in cm = ", lport*100)
+		generated_code_1();
+	}
+
+	// Compute excursion for 1 V input signal
+	   
+	function xexcur(f)
+	{
+		// angular frequency
+		
+		omega = f*2*Math.PI;
+		
+		// handle special case if w = w_port, to avoid zero divide. This is a bit
+		// of a cheat, but will not be noticeable in the graphs.
+		
+		if (Math.abs(omega - w_port) < 0.001) 
+		{
+			omega = omega + 0.0001;
+		}
+
+		generated_code_2(omega)
+		
+		// port factor
+		
+		pf = Math.pow(omega, 2)/(Math.pow(omega, 2) - Math.pow(w_port, 2))
+		
+		// convert excursion into mm
+		
+		xExc = xabs*VinExc*1000;
+		
+		// compute port air speed
+		
+		// frac = S_d*Math.pow(w_port, 2)/(S_port*(Math.pow(omega, 2) - Math.pow(w_port, 2)))
+		speed = Math.abs(omega*xabs*VinExc*port_cone_frac/c)
+		
+		// compute SPL
+		
+		P1 = 20*Math.log(xabs*Math.abs(VinSens*Math.pow(omega, 2)*rho*S_d*
+			Ndrivers*pf/2/Dist/Math.PI/splref))/Math.log(10);
+			
+		P2 = 20*Math.log(xabs*Math.abs(VinExc*Math.pow(omega, 2)*rho*S_d*
+			Ndrivers*pf/2/Dist/Math.PI/splref))/Math.log(10);
+			
+		return [xExc, speed, P1, P2];
+	}  
+
+	// main line of program
+	
+	$(function () {
+		function plotz()
+		{
+			getstuff();
+			// arrays of data for the graphs
+			d1 = []; // gexcursion, peak
+			d2 = []; // excursion, waveform based
+			s1 = []; // sensitivity in dB SPL at 1 W
+			s2 = []; // sensitivity at amplifier power
+			m1 = []; // port air speed in Mach
+			m2 = []; // port air speed, waveform based
+			raws = 'f(hz), x(mm), v(mach)\n';
+			fmin = Math.floor(document.forms['example']['fmin'].value)
+			fmax = Math.floor(document.forms['example']['fmax'].value)
+			//for (f = fmin; f <= fmax; f += 1)
+			f = fmin
+			while (f <= fmax)
+			{
+				u = xexcur(f);
+				raws = raws + f + ', ' + u[0] + ', ' + u[1] + '\n';
+				d1.push([f, u[0]]);
+				m1.push([f, u[1]]);
+				s1.push([f, u[2]]);
+				s2.push([f, u[3]]);
+				u0sum = u[0]/4;
+				u1sum = u[1]/4;
+				for (j = 2; j <= 4; j++)
+				{
+					u = xexcur(j*f);
+					u0sum = u0sum + u[0]/4;
+					u1sum = u1sum + u[1]/4;
+				}
+				d2.push([f,u0sum]);
+				m2.push([f,u1sum]);
+				f *= 1.02;
+			}
+			document.forms['after'].rawdata.value = raws;
+
+			d3 = [[fmin,Xmax_mm],[fmax,Xmax_mm]];
+
+			xa = {
+				transform: function (v) {return Math.log(v)},
+				inverseTransform: function (v) {return Math.exp(v)},
+				//ticks: [20, 30, 40, 50, 60, 80, 100, 120, 150, 200, [250, "250 Hz"]]
+				ticks: [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]
+			}
+
+			options = {
+				legend: {
+					show: true,
+					position: "ne", // or "nw", "se", "sw"
+					//margin: [10, 10], // Margin to plot edge in pixels
+					//backgroundOpacity: 0.5,
+					noColumns: 1
+				},
+				grid: {backgroundColor: "white"},
+				//xaxis: {mode: "log"}
+				xaxis: xa
+			}
+				
+
+
+		divElement = document.getElementById("exc_caption");
+		divElement.textContent = "Cone excursion in mm @ " + PinExc + " W"
+
+		$.plot($("#excursion"), 
+			[{label: "Peak @ " + PinExc + " W", data: d1},
+			//{label: "Waveform based @ " + PinExc + " W", data: d2},
+			{label: "Xmax", data: d3}],
+			options);
+
+		divElement = document.getElementById("sens_caption");
+		divElement.textContent = "Sensitivity in dB SPL @ 1 and " + PinExc + " W"
+		
+		$.plot($("#sensitivity"), 
+			[{label: "1 W", data: s1},
+			{label: PinExc + " W", data: s2}],
+			options);
+			
+		divElement = document.getElementById("speed_caption");
+		divElement.textContent = "Port air speed in Mach @ " + PinExc + " W"
+
+		$.plot($("#mach"), 
+			[
+				{label: "Peak @ " + PinExc + " W", data: m1},
+				// Decided that waveform based port air speed isn't useful
+				// {label: "Waveform based @ " + PinExc + " W", data: m2}
+			],
+			options);
+		}
+		
+		// assign the above to the re-compute button
+		
+		$(".stackControls input").click(function () {
+			plotz();
+		});
+		
+		// generate first view of plot
+		
+		plotz();
+	});
+</script>
+<a name="disclaimer"></a><h2>Disclaimer</h2>
+Copyright (c) 2014-2026 Francis Deck<br><br>
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:<br><br>
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.<br><br>
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+</div>
+</body>
+</html>
