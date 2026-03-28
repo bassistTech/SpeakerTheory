@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Max Width Example</title>
+    <style>
+        .container {
+            max-width: 900px; /* Sets the maximum width of the container */
+            width: 100%;      /* Ensures it is responsive and can be smaller than 900px */
+            margin: 0 auto;   /* Centers the container on the page */
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+    </style>
+	<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+</head>
+<body>
+  <div class="container">
+
+<h2>Background Information</h2>
+This program is the result of merging my interests in bass, physics, and programming. I had already written a speaker modeling program in Visual Basic for my own use, and to prove that my understanding of speaker theory led to the same results as accepted programs such as WinISD.<br><br>
+
+A couple of years ago, I decided that Visual Basic had run its course (for one thing, it doesn't run on multiple platforms, and for another, it has gotten way too bloated), and went language-shopping. I tested each language by writing the speaker modeling program. It's a good test case because a lot of my programs involve computation and graphing. One of the languages that I tried was JavaScript. Indeed, JS lost out to Python for my general work, but I think that JS represents a better option for creating and sharing simple programs that have to run on portable devices such as phones and tablets.<br><br> 
+
+Why do I like these "scripting" languages? I've found that "enterprise" development tools and IDEs are too complex and cumbersome for my typical work, which tends to focus on solving problems quickly, but not delivering commercial software. I want to write programs in a plain text editor, and run them with no compilation step. For more than 30 years, I've preferred to keep an eye on tools that become popular for curious people such as scientists, hobbyists, and kids. Python seems to be in ascendance right now, but JavaScript has a unique position because it can be mixed with HTML and run in the browser. So I think that I will continue to play with JavaScript as I maintain this program.
+<a name="dlibrary"></a><h2>Driver library</h2>
+Please help me build this library! If you have entered an existing driver, please send me
+the URL generated above and I will add it here. Also, if you have a link to the manufacturer's
+data sheet, I'd appreciate having that too.<br><br>
+Each driver model is really a design model, i.e., it has some basic box design parameters entered
+just so the program will display something. These will over-write your existing design, so make
+sure you save the URL for your design before choosing a new driver.
+<h3>Eminence</h3>
+<a href="speaker.html?Dname=Eminence%202512-ii&Fs=39&Re=5.04&Qes=0.44&Qms=3.13&Vas=147&Sd=519.5&Xmax=4.9&Le=0.46&Znom=8&Bname=32%20liter%2040%20Hz%20box&V_liters=32&Ndrivers=1&Fport=40&Aport=5&Bport=8&nPorts=1&PinExc=150&">2512-ii</a>
+<h3>Faital Pro</h3>
+<h2>FAQ and troubleshooting</h2>
+
+<DL>
+	<DT>It's ugly.
+	<DD>I've decided to focus on functionality not aesthetics, just to budget my effort. In addition, I'd like to illustrate
+	how to create a workable web page with computations and graphs, using plain HTML and Javascript.
+</DL>
+
+<DL>
+	<DT>All of the graphs go blank
+	<DD>Make sure you've entered valid numbers in all of the fields. My program doesn't have a lot
+	of error checking, so if Javascript runs into a problem, it just stops. Or, my program might
+	have a bug!
+</DL>
+
+<DL>
+	<DT>What's the theory behind the models?
+	<DD>I've included a lot of info about speaker theory at my non-commercial web page: 
+	<a href = "http://personalpages.tds.net/~fdeck/bass/">Bass Page</a>
+</DL>
+
+<DL>
+	<DT>All of this theory stuff is well and good, but how will my speaker sound?
+	<DD>Good question. The answer is that modeling is just part of the design
+	process. It's way beyond the scope of this web page, but there are a lot of
+	resources online.
+</DL>
+
+<DL>
+	<DT>Is it open-source?
+	<DD>Yes! You can do a "view document source" in your browser to see the source code for these pages. They are written by hand in HTML, so they are not lengthy files.
+</DL>
+
+<DL>
+	<DT>Can I install this on my own computer and play with the code?
+	<DD>Yes! The easiest way is to start by downloading Flot at <a href = "http://www.flotcharts.org/">www.flotcharts.org</a>
+	and extracting the files into a folder, then put my programs speaker.html and misc.html into the folder along with Flot.
+	This is how I work on the program, and I have duplicated this structure at my web page.
+</DL>
+
+<DL>
+	<DT>Am I ready to buy a driver?
+	<DD>No! A lot of the "speaker build from hell" stories on TalkBass start with someone innocently buying a driver based
+	on whatever recommendations, and then asking what box it should go into. Don't buy a driver until you have an idea of
+	one or even more than one design that it could work in. Modeling is free.
+</DL>
+
+<DL>
+	<DT>Am I ready to build my speaker?
+	<DD>Not yet. First of all, you should confirm your design using at least one other program such as WinISD, because
+	drivers and plywood are expensive. Next, you should chat with the good folks at TalkBass, Bill Fitzmaurice, or Greenboy,
+	to get commends and advice. The reaction to your first design idea might be disheartening, but it beats wasting good
+	money and time.
+</DL>
+
+<DL>
+	<DT>Are the computations correct?
+	<DD>My program has not received as much scrutiny as the respected WinISD Pro, but I have checked it against WinISD,
+	against my own equations, and speaker modeling programs that I wrote in two other languages (Python and JavaScript).
+	I can tell you a couple of departures from WinISD. First, I use a different way of computing the drive voltage for the
+	SPL graphs, resulting in my graphs being about 2 dB higher than typical WinISD for the same designs. Second, our
+	port length calculations don't agree exactly, but <i>it is my strong advice to leave some room in your design to
+	modify the port length after you have assembled the box and measured the actual tuning frequency, especially for
+	shelf ports</i>
+</DL>
+
+<DL>
+	<DT>
+	<DD>
+</DL>
+
+<a name="history"></a><h2>Revision history (only functional changes and bugs listed, cosmetic clean-ups come along for the ride)</h2>
+3/9/2016: Fixed bug having to do with saving the P<sub>e</sub> parameter<br>
+1/8/2015: Fixed bug which ignored number of ports<br>
+1/7/2015: Added port end correction factor<br>
+10/31/2014: Added ability to enter speaker design in URL<br>
+12/16/2013: Made it more modular, maybe easier to maintain going forward<br>
+12/15/2013: First upload to Web<br>
+3/11/2026: Revision to the math, using formulas generated automatically by my computer algebra program. <br>
+</html>
+</div>
+</body>
+</html>

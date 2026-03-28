@@ -1,0 +1,5 @@
+Temporary file containing "gallery" of designs that can be pasted into the URL of your browser. I will get these incorporated into the web pages soon.
+
+Basslite 2010 in small 40 Hz box
+
+https://bassisttech.github.io/speakerjs/speaker.html?Dname=Basslite%20S2010&Fs=46&Re=5.02&Qes=0.34&Qms=4.16&Vas=63.4&Sd=350.1&Xmax=4&Le=0.47&Znom=8&Pe=150&Bname=30%20liter%2040%20Hz%20box&V_liters=30&Ndrivers=1&Fport=40&Aport=8&Bport=8&nPorts=1&endCorrect=0.732&PinExc=100&
